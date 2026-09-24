@@ -219,6 +219,11 @@ pub fn make_lua_context(config_file: &Path) -> anyhow::Result<Lua> {
         let wezterm_mod = get_or_create_module(&lua, "wezterm")?;
 
         let package: Table = globals.get("package").context("get _G.package")?;
+        // peTTY: `require "petty"` returns the same module as `require "wezterm"`
+        let loaded: Table = package.get("loaded").context("get package.loaded")?;
+        loaded
+            .set("petty", wezterm_mod.clone())
+            .context("alias package.loaded.petty")?;
         let package_path: String = package.get("path").context("get package.path as String")?;
         let mut path_array: Vec<String> = package_path.split(";").map(|s| s.to_owned()).collect();
 
@@ -228,7 +233,10 @@ pub fn make_lua_context(config_file: &Path) -> anyhow::Result<Lua> {
         }
 
         prefix_path(&mut path_array, &crate::HOME_DIR.join(".wezterm"));
-        for dir in crate::CONFIG_DIRS.iter() {
+        prefix_path(&mut path_array, &crate::HOME_DIR.join(".petty"));
+        // Reversed because prefix_path inserts at the front: this keeps the
+        // petty dirs ahead of the legacy wezterm dirs in the search order.
+        for dir in crate::CONFIG_DIRS.iter().rev() {
             prefix_path(&mut path_array, dir);
         }
         path_array.insert(

@@ -16,7 +16,8 @@ mod daemonize;
 
 #[derive(Debug, Parser)]
 #[command(
-    about = "Wez's Terminal Emulator\nhttp://github.com/wezterm/wezterm",
+    name = "petty-mux-server",
+    about = "peTTY: a terminal emulator that holds grudges (fork of WezTerm)\nhttps://github.com/CharlesMoore-Dev/petty",
     version = config::wezterm_version(),
     trailing_var_arg = true,
 )]

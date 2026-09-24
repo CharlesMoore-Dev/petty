@@ -1025,9 +1025,15 @@ impl Config {
         // multiple.  In addition, it spawns a lot of subprocesses,
         // so we do this bit "by-hand"
 
-        let mut paths = vec![PathPossibility::optional(HOME_DIR.join(".wezterm.lua"))];
-        for dir in CONFIG_DIRS.iter() {
-            paths.push(PathPossibility::optional(dir.join("wezterm.lua")))
+        // petty.lua is preferred; wezterm.lua is still honored as a fallback
+        let mut paths = vec![];
+        for file_name in ["petty.lua", "wezterm.lua"] {
+            paths.push(PathPossibility::optional(
+                HOME_DIR.join(format!(".{file_name}")),
+            ));
+            for dir in CONFIG_DIRS.iter() {
+                paths.push(PathPossibility::optional(dir.join(file_name)))
+            }
         }
 
         if cfg!(windows) {
@@ -1042,11 +1048,16 @@ impl Config {
             if let Ok(exe_name) = std::env::current_exe() {
                 if let Some(exe_dir) = exe_name.parent() {
                     paths.insert(0, PathPossibility::optional(exe_dir.join("wezterm.lua")));
+                    paths.insert(0, PathPossibility::optional(exe_dir.join("petty.lua")));
                 }
             }
         }
         if let Some(path) = std::env::var_os("WEZTERM_CONFIG_FILE") {
             log::trace!("Note: WEZTERM_CONFIG_FILE is set in the environment");
+            paths.insert(0, PathPossibility::required(path.into()));
+        }
+        if let Some(path) = std::env::var_os("PETTY_CONFIG_FILE") {
+            log::trace!("Note: PETTY_CONFIG_FILE is set in the environment");
             paths.insert(0, PathPossibility::required(path.into()));
         }
 
@@ -1624,7 +1635,9 @@ impl Config {
 }
 
 fn default_check_for_updates() -> bool {
-    cfg!(not(feature = "distro-defaults"))
+    // peTTY: the update checker polls wezterm/wezterm GitHub releases and
+    // would advertise WezTerm builds, so it is off until peTTY has releases.
+    false
 }
 
 fn default_pane_select_fg_color() -> RgbaColor {
@@ -1758,26 +1771,26 @@ fn default_font_size() -> f64 {
 
 pub(crate) fn compute_cache_dir() -> anyhow::Result<PathBuf> {
     if let Some(runtime) = dirs_next::cache_dir() {
-        return Ok(runtime.join("wezterm"));
+        return Ok(runtime.join("petty"));
     }
 
-    Ok(crate::HOME_DIR.join(".local/share/wezterm"))
+    Ok(crate::HOME_DIR.join(".local/share/petty"))
 }
 
 pub(crate) fn compute_data_dir() -> anyhow::Result<PathBuf> {
     if let Some(runtime) = dirs_next::data_dir() {
-        return Ok(runtime.join("wezterm"));
+        return Ok(runtime.join("petty"));
     }
 
-    Ok(crate::HOME_DIR.join(".local/share/wezterm"))
+    Ok(crate::HOME_DIR.join(".local/share/petty"))
 }
 
 pub(crate) fn compute_runtime_dir() -> anyhow::Result<PathBuf> {
     if let Some(runtime) = dirs_next::runtime_dir() {
-        return Ok(runtime.join("wezterm"));
+        return Ok(runtime.join("petty"));
     }
 
-    Ok(crate::HOME_DIR.join(".local/share/wezterm"))
+    Ok(crate::HOME_DIR.join(".local/share/petty"))
 }
 
 pub fn pki_dir() -> anyhow::Result<PathBuf> {

@@ -31,10 +31,11 @@ rebuilt as its own application: new name, new icon, and a worse attitude.
 Rename in progress:
 
 - [x] Fork, icon, README
-- [ ] Binaries (`wezterm` → `petty`, `wezterm-gui` → `petty-gui`, ...)
-- [ ] macOS app bundle (`peTTY.app`, bundle ID, icon)
-- [ ] Config file and paths (`~/.config/petty/petty.lua`)
-- [ ] Window titles, about dialog, and user-visible strings
+- [x] Binaries (`petty`, `petty-gui`, `petty-mux-server`)
+- [x] macOS app bundle (`peTTY.app`, `dev.charlesmoore.petty`, new icon)
+- [x] Config file and paths (`~/.config/petty/petty.lua`, with `wezterm.lua` fallback)
+- [x] macOS menu bar, quit dialogs, and default pane title
+- [ ] Linux and Windows packaging (rpm, deb, AppImage, Flatpak, installer)
 - [ ] Opinionated defaults and passive-aggressive error messages
 
 ## Building
@@ -46,11 +47,36 @@ Xcode Command Line Tools.
 git clone --recurse-submodules git@github.com:CharlesMoore-Dev/petty.git
 cd petty
 cargo build --release
-./target/release/wezterm
+./target/release/petty start
 ```
 
-Until the rename lands, the binaries are still called `wezterm`. peTTY is
-aware of this and is not happy about it.
+To build `peTTY.app` on macOS, run `bash ci/deploy.sh` after the build.
+
+## Configuration
+
+peTTY looks for its config in this order and uses the first one it finds:
+
+1. `$PETTY_CONFIG_FILE` (or the older `$WEZTERM_CONFIG_FILE`)
+2. `~/.petty.lua`, then `~/.config/petty/petty.lua`
+3. `~/.wezterm.lua`, then `~/.config/wezterm/wezterm.lua`
+
+An existing WezTerm config keeps working unchanged. In Lua, `require "petty"`
+and `require "wezterm"` return the same module, so either spelling works.
+
+## Deliberately still called WezTerm
+
+These keep the old name on purpose, so shells, editors, and plugins keep
+working:
+
+- `TERM_PROGRAM=WezTerm` and the `wezterm` terminfo entry, which tools use to
+  detect features like inline images and hyperlinks
+- `WEZTERM_*` environment variables inside panes, which the shell integration
+  uses
+- The `wezterm` Lua module, now also available as `petty`
+- Internal Rust crate names, to keep merging from upstream painless
+
+The update checker is off by default because it would advertise WezTerm
+releases.
 
 ## Staying in sync with upstream
 

@@ -449,6 +449,9 @@ __wezterm_set_user_var() {
 # command provided by wezterm if wezterm is installed, but falls
 # back to a simple printf command otherwise.
 __wezterm_osc7() {
+  if hash petty 2>/dev/null ; then
+    petty set-working-directory 2>/dev/null && return 0
+  fi
   if hash wezterm 2>/dev/null ; then
     wezterm set-working-directory 2>/dev/null && return 0
     # If the command failed (perhaps the installed wezterm

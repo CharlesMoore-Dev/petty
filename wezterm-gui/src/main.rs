@@ -67,7 +67,8 @@ pub use termwindow::{set_window_class, set_window_position, TermWindow, ICON_DAT
 
 #[derive(Debug, Parser)]
 #[command(
-    about = "Wez's Terminal Emulator\nhttp://github.com/wezterm/wezterm",
+    name = "petty-gui",
+    about = "peTTY: a terminal emulator that holds grudges (fork of WezTerm)\nhttps://github.com/CharlesMoore-Dev/petty",
     version = config::wezterm_version()
 )]
 struct Opt {
@@ -1233,7 +1234,7 @@ fn run() -> anyhow::Result<()> {
         Some(sub) => sub,
         None => {
             // Need to fake an argv0
-            let mut argv = vec!["wezterm-gui".to_string()];
+            let mut argv = vec!["petty-gui".to_string()];
             for a in &config.default_gui_startup_args {
                 argv.push(a.clone());
             }

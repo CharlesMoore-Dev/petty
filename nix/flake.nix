@@ -141,6 +141,7 @@
 
               # hash does not work well with NixOS
               substituteInPlace assets/shell-integration/wezterm.sh \
+                --replace-fail 'hash petty 2>/dev/null' 'command type -P petty &>/dev/null' \
                 --replace-fail 'hash wezterm 2>/dev/null' 'command type -P wezterm &>/dev/null' \
                 --replace-fail 'hash base64 2>/dev/null' 'command type -P base64 &>/dev/null' \
                 --replace-fail 'hash hostname 2>/dev/null' 'command type -P hostname &>/dev/null' \
@@ -155,20 +156,20 @@
                 patchelf \
                   --add-needed "${pkgs.libGL}/lib/libEGL.so.1" \
                   --add-needed "${pkgs.vulkan-loader}/lib/libvulkan.so.1" \
-                  $out/bin/wezterm-gui
+                  $out/bin/petty-gui
               ''
               + lib.optionalString stdenv.isDarwin /* bash */ ''
                 mkdir -p "$out/Applications"
-                OUT_APP="$out/Applications/WezTerm.app"
-                cp -r assets/macos/WezTerm.app "$OUT_APP"
+                OUT_APP="$out/Applications/peTTY.app"
+                cp -r assets/macos/peTTY.app "$OUT_APP"
                 rm $OUT_APP/*.dylib
                 cp -r assets/shell-integration/* "$OUT_APP/Contents/Resources"
                 # macOS will only recognize our application bundle
                 # if the binaries are inside of it. Move them there
                 # and create symbolic links for them in bin/.
                 mkdir -p "$OUT_APP/Contents/MacOS"
-                mv $out/bin/{wezterm,wezterm-mux-server,wezterm-gui,strip-ansi-escapes} "$OUT_APP/Contents/MacOS"
-                ln -s "$OUT_APP/Contents/MacOS"/{wezterm,wezterm-mux-server,wezterm-gui,strip-ansi-escapes} "$out/bin"
+                mv $out/bin/{petty,petty-mux-server,petty-gui,strip-ansi-escapes} "$OUT_APP/Contents/MacOS"
+                ln -s "$OUT_APP/Contents/MacOS"/{petty,petty-mux-server,petty-gui,strip-ansi-escapes} "$out/bin"
               '';
 
             preBuild = ''
@@ -184,7 +185,7 @@
               install -Dm644 assets/wezterm.appdata.xml $out/share/metainfo/org.wezfurlong.wezterm.appdata.xml
 
               install -Dm644 assets/shell-integration/wezterm.sh -t $out/etc/profile.d
-              installShellCompletion --cmd wezterm \
+              installShellCompletion --cmd petty \
                 --bash assets/shell-completion/bash \
                 --fish assets/shell-completion/fish \
                 --zsh assets/shell-completion/zsh

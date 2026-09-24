@@ -382,20 +382,24 @@ pub fn create_user_owned_dirs(p: &Path) -> anyhow::Result<()> {
     Ok(())
 }
 
-fn xdg_config_home() -> PathBuf {
-    match std::env::var_os("XDG_CONFIG_HOME").map(|s| PathBuf::from(s).join("wezterm")) {
+fn xdg_config_home(app_name: &str) -> PathBuf {
+    match std::env::var_os("XDG_CONFIG_HOME").map(|s| PathBuf::from(s).join(app_name)) {
         Some(p) => p,
-        None => HOME_DIR.join(".config").join("wezterm"),
+        None => HOME_DIR.join(".config").join(app_name),
     }
 }
 
+/// peTTY dirs come first; the legacy wezterm dirs follow so that an
+/// existing wezterm config keeps working until it is migrated.
 fn config_dirs() -> Vec<PathBuf> {
     let mut dirs = Vec::new();
-    dirs.push(xdg_config_home());
+    for app_name in ["petty", "wezterm"] {
+        dirs.push(xdg_config_home(app_name));
 
-    #[cfg(unix)]
-    if let Some(d) = std::env::var_os("XDG_CONFIG_DIRS") {
-        dirs.extend(std::env::split_paths(&d).map(|s| PathBuf::from(s).join("wezterm")));
+        #[cfg(unix)]
+        if let Some(d) = std::env::var_os("XDG_CONFIG_DIRS") {
+            dirs.extend(std::env::split_paths(&d).map(|s| PathBuf::from(s).join(app_name)));
+        }
     }
 
     dirs

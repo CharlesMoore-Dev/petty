@@ -23,7 +23,8 @@ mod cli;
 
 #[derive(Debug, Parser)]
 #[command(
-    about = "Wez's Terminal Emulator\nhttp://github.com/wezterm/wezterm",
+    name = "petty",
+    about = "peTTY: a terminal emulator that holds grudges (fork of WezTerm)\nhttps://github.com/CharlesMoore-Dev/petty",
     version = wezterm_version()
 )]
 pub struct Opt {
@@ -772,9 +773,9 @@ fn delegate_to_gui(saver: UmaskSaver) -> anyhow::Result<()> {
     drop(saver);
 
     let exe_name = if cfg!(windows) {
-        "wezterm-gui.exe"
+        "petty-gui.exe"
     } else {
-        "wezterm-gui"
+        "petty-gui"
     };
 
     let exe = std::env::current_exe()?

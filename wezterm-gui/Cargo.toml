@@ -33,6 +33,10 @@ anyhow.workspace = true
 cc.workspace = true
 embed-resource.workspace = true
 
+[[bin]]
+name = "petty-gui"
+path = "src/main.rs"
+
 [dependencies]
 anyhow.workspace = true
 bitflags.workspace = true
