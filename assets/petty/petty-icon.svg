@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3a2352"/>
+      <stop offset="1" stop-color="#140c20"/>
+    </linearGradient>
+    <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+    <radialGradient id="screenGlow" cx="0.5" cy="0.5" r="0.7">
+      <stop offset="0" stop-color="#132a22"/>
+      <stop offset="1" stop-color="#070b0a"/>
+    </radialGradient>
+    <pattern id="scan" width="8" height="8" patternUnits="userSpaceOnUse">
+      <rect width="8" height="4" fill="#000" opacity="0.22"/>
+    </pattern>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="7" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#000" flood-opacity="0.45"/>
+    </filter>
+    <!-- half-lidded eyes: visible part of each eye sits below a lid line slanting toward the nose -->
+    <clipPath id="lidL"><polygon points="330,452 490,476 490,560 330,560"/></clipPath>
+    <clipPath id="lidR"><polygon points="534,476 694,452 694,560 534,560"/></clipPath>
+  </defs>
+
+  <!-- app tile -->
+  <g filter="url(#shadow)">
+    <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#bg)"/>
+  </g>
+  <rect x="100" y="100" width="824" height="824" rx="185" fill="url(#sheen)"/>
+  <rect x="101.5" y="101.5" width="821" height="821" rx="184" fill="none" stroke="#ffffff" stroke-opacity="0.12" stroke-width="3"/>
+
+  <!-- window chrome -->
+  <circle cx="212" cy="178" r="13" fill="#ff5f57"/>
+  <circle cx="254" cy="178" r="13" fill="#febc2e"/>
+  <circle cx="296" cy="178" r="13" fill="#28c840"/>
+
+  <!-- screen -->
+  <rect x="164" y="222" width="696" height="626" rx="52" fill="url(#screenGlow)"/>
+  <rect x="164" y="222" width="696" height="626" rx="52" fill="url(#scan)"/>
+  <rect x="164" y="222" width="696" height="626" rx="52" fill="none" stroke="#000" stroke-opacity="0.6" stroke-width="4"/>
+
+  <g filter="url(#glow)" stroke-linecap="round" stroke-linejoin="round">
+    <!-- eyes -->
+    <g clip-path="url(#lidL)">
+      <ellipse cx="410" cy="492" rx="66" ry="54" fill="#e9fff4"/>
+      <circle cx="450" cy="512" r="24" fill="#0a1411"/>
+    </g>
+    <g clip-path="url(#lidR)">
+      <ellipse cx="614" cy="492" rx="66" ry="54" fill="#e9fff4"/>
+      <circle cx="654" cy="512" r="24" fill="#0a1411"/>
+    </g>
+    <!-- heavy lids -->
+    <line x1="334" y1="452" x2="486" y2="476" stroke="#7cffb2" stroke-width="16"/>
+    <line x1="538" y1="476" x2="690" y2="452" stroke="#7cffb2" stroke-width="16"/>
+
+    <!-- prompt + sulking cursor mouth -->
+    <polyline points="372,632 424,664 372,696" fill="none" stroke="#7cffb2" stroke-width="20"/>
+    <rect x="460" y="668" width="124" height="24" rx="5" fill="#7cffb2" transform="rotate(-6 522 680)"/>
+
+    <!-- anger vein -->
+    <g fill="none" stroke="#ff4d6d" stroke-width="11">
+      <path d="M735 297 Q759 297 759 273"/>
+      <path d="M785 273 Q785 297 809 297"/>
+      <path d="M809 323 Q785 323 785 347"/>
+      <path d="M759 347 Q759 323 735 323"/>
+    </g>
+  </g>
+</svg>

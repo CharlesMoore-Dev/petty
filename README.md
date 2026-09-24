@@ -1,40 +1,73 @@
-# Wez's Terminal
+<p align="center">
+  <img src="assets/petty/petty-icon.png" alt="peTTY icon" width="256">
+</p>
 
-<img height="128" alt="WezTerm Icon" src="https://raw.githubusercontent.com/wezterm/wezterm/main/assets/icon/wezterm-icon.svg" align="left"> *A GPU-accelerated cross-platform terminal emulator and multiplexer written by <a href="https://github.com/wez">@wez</a> and implemented in <a href="https://www.rust-lang.org/">Rust</a>*
+<h1 align="center">peTTY</h1>
 
-User facing docs and guide at: https://wezterm.org/
+<p align="center"><em>A GPU-accelerated terminal emulator that holds grudges.</em></p>
 
-![Screenshot](docs/screenshots/two.png)
+---
 
-*Screenshot of wezterm on macOS, running vim*
+peTTY is a terminal emulator for people who have been paged at 3 AM, told
+"it's probably DNS," and were right about it being DNS.
 
-## Installation
+It remembers the command you ran without `sudo`. It remembers the time you
+typed `rm -rf` into the wrong tab. It will not bring these things up unless
+provoked. It will be provoked.
 
-https://wezterm.org/installation
+## Features
 
-## Getting help
+- **Fast.** Very fast. Faster than your change-approval process.
+- **Scrollback.** Everything you've ever done, kept forever, for reference.
+- **Tabs and splits.** So you can ignore several servers at once.
+- **Ligatures.** Your `->` looks great while prod is on fire.
+- **Side-eye.** Included at no extra charge.
 
-This is a spare time project, so please bear with me.  There are a couple of channels for support:
+## Status
 
-* You can use the [GitHub issue tracker](https://github.com/wezterm/wezterm/issues) to see if someone else has a similar issue, or to file a new one.
-* Start or join a thread in our [GitHub Discussions](https://github.com/wezterm/wezterm/discussions); if you have general
-  questions or want to chat with other wezterm users, you're welcome here!
-* There is a [Matrix room via Element.io](https://matrix.to/#/#wezterm:matrix.org)
-  for (potentially!) real time discussions.
+peTTY is a fork of [WezTerm](https://github.com/wezterm/wezterm), being
+rebuilt as its own application: new name, new icon, and a worse attitude.
 
-The GitHub Discussions and Element/Gitter rooms are better suited for questions
-than bug reports, but don't be afraid to use whichever you are most comfortable
-using and we'll work it out.
+Rename in progress:
 
-## Supporting the Project
+- [x] Fork, icon, README
+- [ ] Binaries (`wezterm` → `petty`, `wezterm-gui` → `petty-gui`, ...)
+- [ ] macOS app bundle (`peTTY.app`, bundle ID, icon)
+- [ ] Config file and paths (`~/.config/petty/petty.lua`)
+- [ ] Window titles, about dialog, and user-visible strings
+- [ ] Opinionated defaults and passive-aggressive error messages
 
-If you use and like WezTerm, please consider sponsoring it: your support helps
-to cover the fees required to maintain the project and to validate the time
-spent working on it!
+## Building
 
-[Read more about sponsoring](https://wezterm.org/sponsor.html).
+Requires a Rust toolchain ([rustup](https://rustup.rs)) and, on macOS, the
+Xcode Command Line Tools.
 
-* [![Sponsor WezTerm](https://img.shields.io/github/sponsors/wez?label=Sponsor%20WezTerm&logo=github&style=for-the-badge)](https://github.com/sponsors/wez)
-* [Patreon](https://patreon.com/WezFurlong)
-* [Ko-Fi](https://ko-fi.com/wezfurlong)
-* [Liberapay](https://liberapay.com/wez)
+```sh
+git clone --recurse-submodules git@github.com:CharlesMoore-Dev/petty.git
+cd petty
+cargo build --release
+./target/release/wezterm
+```
+
+Until the rename lands, the binaries are still called `wezterm`. peTTY is
+aware of this and is not happy about it.
+
+## Staying in sync with upstream
+
+```sh
+git remote add upstream https://github.com/wezterm/wezterm.git
+git fetch upstream
+git merge upstream/main
+```
+
+## Credit where it's due
+
+peTTY exists because [Wez Furlong](https://github.com/wez) and the WezTerm
+contributors built an excellent terminal. All the good parts are theirs; the
+attitude is ours. For WezTerm's own documentation, see
+[wezterm.org](https://wezterm.org/).
+
+## License
+
+MIT, same as upstream. The original WezTerm copyright notice is preserved in
+[LICENSE.md](LICENSE.md).
