@@ -778,7 +778,11 @@ fn delegate_to_gui(saver: UmaskSaver) -> anyhow::Result<()> {
         "petty-gui"
     };
 
-    let exe = std::env::current_exe()?
+    // Resolve symlinks (eg: /opt/homebrew/bin/petty -> peTTY.app) so that
+    // we find petty-gui alongside the real executable
+    let exe = std::env::current_exe()?;
+    let exe = exe.canonicalize().unwrap_or(exe);
+    let exe = exe
         .parent()
         .ok_or_else(|| anyhow!("exe has no parent dir!?"))?
         .join(exe_name);

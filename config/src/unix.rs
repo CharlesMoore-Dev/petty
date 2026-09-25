@@ -117,13 +117,18 @@ impl UnixDomain {
         match self.serve_command.as_ref() {
             Some(cmd) => Ok(cmd.iter().map(Into::into).collect()),
             None => Ok(vec![
-                std::env::current_exe()?
-                    .with_file_name(if cfg!(windows) {
-                        "petty-mux-server.exe"
-                    } else {
-                        "petty-mux-server"
-                    })
-                    .into_os_string(),
+                // Resolve symlinks so we find petty-mux-server alongside
+                // the real executable rather than next to a symlink to it
+                {
+                    let exe = std::env::current_exe()?;
+                    exe.canonicalize().unwrap_or(exe)
+                }
+                .with_file_name(if cfg!(windows) {
+                    "petty-mux-server.exe"
+                } else {
+                    "petty-mux-server"
+                })
+                .into_os_string(),
                 OsString::from("--daemonize"),
             ]),
         }
