@@ -373,6 +373,15 @@ impl crate::TermWindow {
             - (1.5 * metrics.cell_size.width as f32))
             .max(0.);
 
+        // Width of the native macOS titlebar buttons, as measured by the
+        // window layer; None if unknown, in which case we fall back to the
+        // older fixed estimate below.
+        let native_buttons_width = self
+            .os_parameters
+            .as_ref()
+            .map(|p| p.title_bar.padding_left.get())
+            .filter(|&w| w > 0);
+
         // Reserve space for the native titlebar buttons
         if self
             .config
@@ -383,7 +392,10 @@ impl crate::TermWindow {
         {
             left_status.push(
                 Element::new(&font, ElementContent::Text("".to_string())).margin(BoxDimension {
-                    left: Dimension::Cells(4.0), // FIXME: determine exact width of macos ... buttons
+                    left: match native_buttons_width {
+                        Some(width) => Dimension::Pixels(width as f32),
+                        None => Dimension::Cells(4.0),
+                    },
                     right: Dimension::Cells(0.),
                     top: Dimension::Cells(0.),
                     bottom: Dimension::Cells(0.),
@@ -445,7 +457,12 @@ impl crate::TermWindow {
             if self.config.integrated_title_button_style == IntegratedTitleButtonStyle::MacOsNative
             {
                 if !self.window_state.contains(window::WindowState::FULL_SCREEN) {
-                    Dimension::Pixels(70.0)
+                    if native_buttons_width.is_some() {
+                        // The spacer above already covers the measured buttons
+                        Dimension::Pixels(0.0)
+                    } else {
+                        Dimension::Pixels(70.0)
+                    }
                 } else {
                     Dimension::Cells(0.5)
                 }

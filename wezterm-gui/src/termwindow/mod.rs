@@ -472,6 +472,7 @@ pub struct TermWindow {
 impl TermWindow {
     fn load_os_parameters(&mut self) {
         if let Some(ref window) = self.window {
+            let previous_padding = self.title_bar_padding_left();
             self.os_parameters = match window.get_os_parameters(&self.config, self.window_state) {
                 Ok(os_parameters) => os_parameters,
                 Err(err) => {
@@ -479,7 +480,18 @@ impl TermWindow {
                     None
                 }
             };
+            if self.title_bar_padding_left() != previous_padding {
+                // The fancy tab bar reserves this space; rebuild it
+                self.invalidate_fancy_tab_bar();
+            }
         }
+    }
+
+    fn title_bar_padding_left(&self) -> usize {
+        self.os_parameters
+            .as_ref()
+            .map(|p| p.title_bar.padding_left.get())
+            .unwrap_or(0)
     }
 
     fn close_requested(&mut self, window: &Window) {

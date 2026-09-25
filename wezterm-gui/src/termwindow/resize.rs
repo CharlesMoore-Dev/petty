@@ -49,7 +49,9 @@ impl super::TermWindow {
         let last_state = self.window_state;
         self.window_state = window_state;
         self.quad_generation += 1;
-        if last_state != self.window_state {
+        // The OS parameters include pixel measurements (eg: the width of the
+        // macOS titlebar buttons) that change with the dpi as well as the state
+        if last_state != self.window_state || self.dimensions.dpi != dimensions.dpi {
             self.load_os_parameters();
         }
 

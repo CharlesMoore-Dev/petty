@@ -939,15 +939,55 @@ impl WindowOps for Window {
             None
         };
 
+        // Report how much of the left edge the native close/minimize/zoom
+        // buttons occupy, so that integrated tab bars can avoid them.
+        let padding_left = if window_state.contains(WindowState::FULL_SCREEN) {
+            0
+        } else {
+            titlebar_buttons_width(self.ns_window).unwrap_or(0)
+        };
+
         Ok(Some(Parameters {
             title_bar: TitleBar {
-                padding_left: ULength::new(0),
+                padding_left: ULength::new(padding_left),
                 padding_right: ULength::new(0),
                 height: None,
                 font_and_size: None,
             },
             border_dimensions,
         }))
+    }
+}
+
+/// Returns the width, in backing pixels, of the region at the left of the
+/// titlebar occupied by the native close/minimize/zoom buttons: from the
+/// window's left edge to the right edge of the zoom button, plus a trailing
+/// margin equal to the leading margin before the close button.
+/// Returns None if the buttons are not present or hidden.
+fn titlebar_buttons_width(ns_window: id) -> Option<usize> {
+    unsafe {
+        let close = ns_window.standardWindowButton_(appkit::NSWindowButton::NSWindowCloseButton);
+        let zoom = ns_window.standardWindowButton_(appkit::NSWindowButton::NSWindowZoomButton);
+        if close.is_null() || zoom.is_null() {
+            return None;
+        }
+        let hidden: BOOL = msg_send![zoom, isHidden];
+        if from_yes_no(hidden) {
+            return None;
+        }
+        let close_frame: NSRect = msg_send![close, frame];
+        let zoom_frame: NSRect = msg_send![zoom, frame];
+        let points = zoom_frame.origin.x + zoom_frame.size.width + close_frame.origin.x;
+        let scale: CGFloat = msg_send![ns_window, backingScaleFactor];
+        log::trace!(
+            "titlebar buttons: close.x={} zoom.x={} zoom.w={} -> {}pt @{}x",
+            close_frame.origin.x,
+            zoom_frame.origin.x,
+            zoom_frame.size.width,
+            points,
+            scale
+        );
+        Some((points * scale).ceil() as usize)
     }
 }
 
